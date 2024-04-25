@@ -107,7 +107,7 @@ def status_table(cur, conn):
 
 #Convert lat & lon into plottable points
 def point_creater(cur):
-    cur.execute('SELECT lat, lon FROM Vehicles')
+    cur.execute('SELECT lon, lat FROM Vehicles')
     coordinates=cur.fetchall()
     geometry=[]
     for each in coordinates:
@@ -123,15 +123,14 @@ def GeoDataFrame_creation(geometry):
 
 #plotting phase
 
-#plot the vehicles
-def visualize_vehicles(gdf_vehicle):
-    gdf_vehicle.plot(marker='o', color='green', markersize=20)
+#plot the base mapc
+def visualize_boundary(file,ax):
+    gdf_boundary=gpd.read_file(file)
+    gdf_boundary.plot(ax=ax)
 
-#plot the base map
-# def visualize_boundary(path):
-#     gdf_boundary=gpd.read_file(path)
-#     gdf_boundary.plot()
-    pass
+#plot the vehicles
+def visualize_vehicles(gdf_vehicle, ax):
+    gdf_vehicle.plot(marker='o', color='yellow', markersize=20, ax=ax)
 
 
 
@@ -144,8 +143,9 @@ def main():
     status_table(cur, conn)
     geometry=point_creater(cur)
     gdf_vehicle=GeoDataFrame_creation(geometry)
-    visualize_vehicles(gdf_vehicle)
-    # visualize_boundary("Washington_DC_Boundary_Stone_Area.geojson")
+    fig, ax = plt.subplots(figsize=[15, 10])
+    visualize_boundary("DC.geojson",ax)
+    visualize_vehicles(gdf_vehicle, ax)
     plt.show()
 
 if __name__ == "__main__":
