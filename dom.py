@@ -9,7 +9,7 @@ try:
     import geopandas as gpd
 except:
     print("geopandas not installed; installing now... please wait!")
-    os.system("pip install geopandas")
+    os.system("conda install geopandas")
 
 #importing libraries for visualization phase
 import geopandas as gpd
