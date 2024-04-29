@@ -86,7 +86,6 @@ def plot_bus_stops_from_db(db_name):
     # Show plot
     plt.show()
 
-# Main function
 def main():
     # Fetch bus stop data
     data = get_bus_stop_data(url, headers)
