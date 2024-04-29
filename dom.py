@@ -26,7 +26,7 @@ def get_data(url):
     return data
 
 #Set-Up Database
-def database_creation(db_name):
+def database_access(db_name):
     path = os.path.dirname(os.path.abspath(__file__))
     conn = sqlite3.connect(path + "/" + db_name)
     cur = conn.cursor() 
@@ -66,13 +66,13 @@ def unix_conversion(data):
 
 #Vehicle Table
 def vehicle_table(data, cur, conn):
-    cur.execute("CREATE TABLE IF NOT EXISTS Vehicles(vehicle_id TEXT, time TEXT, vehicle_type INTEGER, lat INTEGER, lon INTEGER, is_reserved INTEGER, is_disabled INTEGER)")
-    #setting up the values 
-    capacity=25
-    count=0
+    cur.execute("CREATE TABLE IF NOT EXISTS Vehicles(vehicle_id TEXT, time TEXT, vehicle_type INTEGER, latitude INTEGER, longitude INTEGER, is_reserved INTEGER, is_disabled INTEGER)")
     cur.execute("SELECT COUNT(*) FROM Vehicles")
     amount= cur.fetchone()[0]
-    while amount<200:
+    #setting up the values 
+    if amount<200:
+        each_run=25
+        count=0
         for vehicle in data["data"]["bikes"]:
             if count==25:
                 break
@@ -84,15 +84,15 @@ def vehicle_table(data, cur, conn):
             cur.execute('SELECT id FROM Types WHERE type = ?', (vehicle_type,))
             vehicle_type_id=cur.fetchone()[0]
             #coordinates
-            lat=vehicle["lat"]
-            lon=vehicle["lon"]
+            latitude=vehicle["lat"]
+            longitude=vehicle["lon"]
             #status
             is_reserved=vehicle["is_reserved"]
             is_disabled=vehicle["is_disabled"]
             #put data into database
-            cur.execute("INSERT INTO Vehicles (vehicle_id, time, vehicle_type, lat, lon, is_reserved, is_disabled) VALUES (?,?,?,?,?,?,?)", (vehicle_id, time, vehicle_type_id, lat, lon, is_reserved, is_disabled))
+            cur.execute("INSERT INTO Vehicles (vehicle_id, time, vehicle_type, latitude, longitude, is_reserved, is_disabled) VALUES (?,?,?,?,?,?,?)", (vehicle_id, time, vehicle_type_id, latitude, longitude, is_reserved, is_disabled))
             count+=1
-    conn.commit()
+        conn.commit()
     pass
 
 #Status Table
@@ -105,48 +105,13 @@ def status_table(cur, conn):
         cur.execute("INSERT INTO Reserved_Disabled (status,meaning) VALUES (?,?)", (i, status_list[i]))
     conn.commit()
 
-#Convert lat & lon into plottable points
-def point_creater(cur):
-    cur.execute('SELECT lon, lat FROM Vehicles')
-    coordinates=cur.fetchall()
-    geometry=[]
-    for each in coordinates:
-        point=Point(each[0], each[1])
-        geometry.append(point) 
-    return geometry
-
-#GeoDataFrame creation
-def GeoDataFrame_creation(geometry):
-    gdf_dict={'geometry':geometry}
-    gdf_vehicle=gpd.GeoDataFrame(gdf_dict, geometry='geometry', crs="EPSG:4326")
-    return gdf_vehicle
-
-#plotting phase
-
-#plot the base mapc
-def visualize_boundary(file,ax):
-    gdf_boundary=gpd.read_file(file)
-    gdf_boundary.plot(ax=ax)
-
-#plot the vehicles
-def visualize_vehicles(gdf_vehicle, ax):
-    gdf_vehicle.plot(marker='o', color='yellow', markersize=20, ax=ax)
-
-
-
 def main():
     data=get_data("https://data.lime.bike/api/partners/v1/gbfs/washington_dc/free_bike_status.json?")
-    cur, conn=database_creation("sharedfleet.db")
+    cur, conn=database_access("sharedfleet.db")
     type_table(data, cur, conn)
     unix_conversion(data)
     vehicle_table(data, cur, conn)
     status_table(cur, conn)
-    geometry=point_creater(cur)
-    gdf_vehicle=GeoDataFrame_creation(geometry)
-    fig, ax = plt.subplots(figsize=[15, 10])
-    visualize_boundary("DC.geojson",ax)
-    visualize_vehicles(gdf_vehicle, ax)
-    plt.show()
 
 if __name__ == "__main__":
     main()
