@@ -66,32 +66,32 @@ def unix_conversion(data):
 
 #Vehicle Table
 def vehicle_table(data, cur, conn):
-    cur.execute("CREATE TABLE IF NOT EXISTS Vehicles(vehicle_id TEXT, time TEXT, vehicle_type INTEGER, latitude INTEGER, longitude INTEGER, is_reserved INTEGER, is_disabled INTEGER)")
+    cur.execute("CREATE TABLE IF NOT EXISTS Vehicles(id INTEGER PRIMARY KEY, vehicle_id TEXT, time TEXT, vehicle_type INTEGER, latitude INTEGER, longitude INTEGER, is_reserved INTEGER, is_disabled INTEGER)")
     #setting up the values 
     count = 0
     cur.execute("SELECT COUNT(*) FROM Vehicles")
     amount= cur.fetchone()[0]
-    for vehicle in data["data"]["bikes"]:
+    for i in range(len(data["data"]["bikes"])):
         if count==25 and amount < 200:
             cur.execute("SELECT COUNT(*) FROM Vehicles")
             amount= cur.fetchone()[0]
             conn.commit()
             return "Limited reached"
-        vehicle_id= vehicle["bike_id"]
+        vehicle_id= data["data"]["bikes"][i]["bike_id"]
         #realtime
         time= unix_conversion(data)
         #vehicle_type
-        vehicle_type= vehicle["vehicle_type"]
+        vehicle_type= data["data"]["bikes"][i]["vehicle_type"]
         cur.execute('SELECT id FROM Types WHERE type = ?', (vehicle_type,))
         vehicle_type_id=cur.fetchone()[0]
         #coordinates
-        latitude=vehicle["lat"]
-        longitude=vehicle["lon"]
+        latitude=data["data"]["bikes"][i]["lat"]
+        longitude=data["data"]["bikes"][i]["lon"]
         #status
-        is_reserved=vehicle["is_reserved"]
-        is_disabled=vehicle["is_disabled"]
+        is_reserved=data["data"]["bikes"][i]["is_reserved"]
+        is_disabled=data["data"]["bikes"][i]["is_disabled"]
         #put data into database
-        cur.execute("INSERT OR IGNORE INTO Vehicles (vehicle_id, time, vehicle_type, latitude, longitude, is_reserved, is_disabled) VALUES (?,?,?,?,?,?,?)", (vehicle_id, time, vehicle_type_id, latitude, longitude, is_reserved, is_disabled))
+        cur.execute("INSERT OR IGNORE INTO Vehicles (id, vehicle_id, time, vehicle_type, latitude, longitude, is_reserved, is_disabled) VALUES (?,?,?,?,?,?,?,?)", (i, vehicle_id, time, vehicle_type_id, latitude, longitude, is_reserved, is_disabled))
         if cur.lastrowid != 0:
             count += 1
 
@@ -100,7 +100,7 @@ def vehicle_table(data, cur, conn):
 #Status Table
 def status_table(cur, conn):
     status_list=["False", "True"]
-    cur.execute("CREATE TABLE IF NOT EXISTS Reserved_Disabled(status INTEGER, meaning TEXT)")
+    cur.execute("CREATE TABLE IF NOT EXISTS Reserved_Disabled(status INTEGER PRIMARY KEY, meaning TEXT)")
     for i in range(len(status_list)):
         cur.execute("INSERT OR IGNORE INTO Reserved_Disabled (status,meaning) VALUES (?,?)", (i, status_list[i]))
     conn.commit()
