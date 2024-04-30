@@ -9,6 +9,14 @@ except:
     os.system("conda install geopandas")
 import geopandas as gpd
 import matplotlib.pyplot as plt
+
+import subprocess
+try:
+    import mapclassify
+except ImportError:
+    subprocess.check_call(['pip', 'install', '--upgrade', 'mapclassify'])
+    import mapclassify
+
 from math import radians, sin, cos, sqrt, atan2
 
 
@@ -36,11 +44,9 @@ def GeoDataFrame_creation(geometry):
     return gdf_object
 
 #function that plot the base map
-def visualize_census(cur,file,ax):
+def visualize_census(file,ax):
     gdf_boundary=gpd.read_file(file)
-    cur.execute("SELECT income FROM Tracts")
-    income=cur.fetchall()
-    gdf_boundary.plot(column=income, ax=ax, scheme="equal_interval")
+    gdf_boundary.plot(column="INCOME", ax=ax, scheme="equal_interval", edgecolor="k", legend=True)
 
 #function that plot in dots form
 def visualize_dots(gdf_object, ax, color, markersize):
@@ -73,13 +79,14 @@ def main():
     cur1, conn1=dom.database_access("sharedfleet.db")
     cur2, conn2=dom.database_access("bus_stops.db")
     cur3, conn3=dom.database_access("testdb.db")
+
     geometry_vehicle=point_creater(cur1, "Vehicles")
     geometry_busstop=point_creater(cur2, "bus_stops")
     gdf_vehicle=GeoDataFrame_creation(geometry_vehicle)
     gdf_busstop=GeoDataFrame_creation(geometry_busstop)
+
     fig, ax = plt.subplots(figsize=[15, 10])
-    #visualize_shape("DC.geojson", ax)
-    visualize_census(cur3, "tl_2022_11_tract.geojson", ax)
+    visualize_census("tracts_with_income.geojson", ax)
     visualize_dots(gdf_busstop, ax, "orange", 5)
     visualize_dots(gdf_vehicle, ax, "red", 20)
     ax.set_xlim(-77.15, -76.90)
