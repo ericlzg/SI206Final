@@ -71,8 +71,8 @@ def vehicle_table(data, cur, conn):
     count = 0
     cur.execute("SELECT COUNT(*) FROM Vehicles")
     amount= cur.fetchone()[0]
-    for i in range(len(data["data"]["bikes"])):
-        if count==25 and amount < 1000:
+    for i in range(1,len(data["data"]["bikes"])):
+        if count >=25 and amount < 1000:
             cur.execute("SELECT COUNT(*) FROM Vehicles")
             amount= cur.fetchone()[0]
             conn.commit()

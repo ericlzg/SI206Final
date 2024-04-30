@@ -98,7 +98,7 @@ def dist_from_tract(infile, tractname, db, outfile):
         ins['Distance from Tract (km)'] = calc_distance(coordinate1,coordinate2)
         outdata.append(ins)
     with open(out_path,'w') as of:
-        json.dump(outdata, of)
+        json.dump(outdata, of, indent=2)
     return 
 
 
