@@ -3,6 +3,7 @@ import json
 import dom 
 from shapely.geometry import Point
 import os
+import sqlite3
 try:
     import geopandas as gpd
 except:
@@ -75,11 +76,33 @@ def calc_distance(coordinate1, coordinate2):
     distance=radius_of_earth*angular_distance
     return distance 
 
-def dist_from_tract(infile, tractname, db1, db2, outfile):
+def dist_from_tract(infile, tractname, db, outfile):
     source_dir = os.path.dirname(__file__)
     full_path = os.path.join(source_dir, infile)
+    out_path = os.path.join(source_dir, outfile)
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path + "/" + db)
+    cur = conn.cursor() 
     with open(full_path,'r') as f:
         data = json.load(f)
+    for item in data['features']:
+        if tractname == item['properties']["NAMELSAD"]:
+            coordinate1 = (float(item['properties']['INTPTLAT']),float(item['properties']['INTPTLON']))
+    cur.execute("SELECT Vehicles.vehicle_id, Vehicles.latitude, Vehicles.longitude, Types.type FROM Vehicles INNER JOIN Types ON Vehicles.vehicle_type = Types.id LIMIT 80")
+    result = cur.fetchall()
+    outdata = []
+    for item in result:
+        ins = {}
+        ins['Vehicle ID'] = item[0]
+        ins['type'] = item[3]
+        coordinate2 = (item[1],item[2])
+        ins['Coordinates'] = coordinate2
+        ins['Distance from Tract (km)'] = calc_distance(coordinate1,coordinate2)
+        outdata.append(ins)
+    with open(out_path,'w') as of:
+        json.dump(outdata, of)
+    return 
+
 
 
 def main():
@@ -114,6 +137,6 @@ def main():
     plt.show()
 
 if __name__ == "__main__":
-    main()
-
+    #main()
+    dist_from_tract('tracts_with_income.geojson','Census Tract 53.02','main.db','calcresult.json')
     #print(calc_distance((38.911534,-77.04167), (38.916999,-77.027574)))
