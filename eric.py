@@ -1,12 +1,19 @@
 import requests
 import os
+import json
 import sqlite3
+try:
+    import geopandas as gpd
+except:
+    print("geopandas not installed; installing now... please wait!")
+    os.system("conda install geopandas")
 
 APIKEY = "e46386cc5e5e09d97a26eeefbec149181eb9612c"
 url = f"https://api.census.gov/data/2022/acs/acs5?get=NAME,B19013_001E&for=tract:*&in=state:11&key={APIKEY}"
 
 def getdata():
-    data = requests.get(url)
+    response = requests.get(url)
+    data = json.loads(response.content)
     return data
 
 def writedb(data,db):
@@ -29,6 +36,8 @@ def writedb(data,db):
         if cur.lastrowid != 0:
             count += 1
     return "All data written"
+
+
         
 
 
@@ -37,6 +46,5 @@ def writedb(data,db):
 
     
 def main():
-    print('wip')
-
+    print(writedb(getdata(),'testdb.db'))
 main()
