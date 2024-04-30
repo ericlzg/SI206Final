@@ -115,6 +115,8 @@ def main():
     gdf_vehicle=GeoDataFrame_creation(geometry_vehicle)
     gdf_busstop=GeoDataFrame_creation(geometry_busstop)
 
+    dist_from_tract('tracts_with_income.geojson','Census Tract 53.02','main.db','calcresult.json')
+
     #visualization 1
     fig1, ax1 = plt.subplots(figsize=[15, 10])
     visualize_dots(gdf_vehicle, ax1, "red", 2)
@@ -137,6 +139,5 @@ def main():
     plt.show()
 
 if __name__ == "__main__":
-    #main()
-    dist_from_tract('tracts_with_income.geojson','Census Tract 53.02','main.db','calcresult.json')
-    #print(calc_distance((38.911534,-77.04167), (38.916999,-77.027574)))
+    main()
+    
