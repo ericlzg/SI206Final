@@ -6,7 +6,7 @@ import geopandas as gpd
 from shapely.geometry import Point
 
 # Define the API endpoint URL
-url = "https://api.wmata.com/Bus.svc/json/jStops"
+url = "https://api.wmata.com/Bus.svc/json/jStops?Lat=38.922370&Lon=-77.024731&Radius=12874.8"
 
 # Set up the request headers with your API key
 headers = {
@@ -97,13 +97,14 @@ def main():
     data = get_bus_stop_data(url, headers)
     if data:
         # Create SQLite database for bus stops
-        create_bus_stop_database(data, "bus_stops.db")
+        create_bus_stop_database(data, "main.db")
         print("Bus stop data successfully saved to database.")
 
         # Plot bus stops from database
-        plot_bus_stops_from_db("bus_stops.db")
+        plot_bus_stops_from_db("main.db")
     else:
         print("Failed to save bus stop data to database.")
 
 if __name__ == "__main__":
     main()
+

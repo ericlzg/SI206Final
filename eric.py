@@ -69,6 +69,6 @@ def modifygeojson(db, infile, outfile):
 
     
 def main():
-    #print(writedb(getdata(),'testdb.db'))
-    modifygeojson('testdb.db', "tl_2022_11_tract.geojson", "tracts_with_income.geojson")
+    writedb(getdata(),'main.db')
+    #modifygeojson('main.db', "tl_2022_11_tract.geojson", "tracts_with_income.geojson")
 main()

@@ -1,4 +1,5 @@
 #IMPORT NECESSARY LIBRARIES
+import json
 import dom 
 from shapely.geometry import Point
 import os
@@ -69,16 +70,22 @@ def calc_distance(coordinate1, coordinate2):
     latdistance=lat2-lat1
     #Haversine formula
     radius_of_earth=6371
-    value=sin(latdistance/2)**2+cos(lat1)*cos(lat2)*sin(londistance)
+    value=sin(latdistance/2)**2+cos(lat1)*cos(lat2)*sin(londistance/2)**2
     angular_distance=2*atan2(sqrt(value), sqrt(1-value))
     distance=radius_of_earth*angular_distance
     return distance 
 
+def dist_from_tract(infile, tractname, db1, db2, outfile):
+    source_dir = os.path.dirname(__file__)
+    full_path = os.path.join(source_dir, infile)
+    with open(full_path,'r') as f:
+        data = json.load(f)
+
 
 def main():
-    cur1, conn1=dom.database_access("sharedfleet.db")
-    cur2, conn2=dom.database_access("bus_stops.db")
-    cur3, conn3=dom.database_access("testdb.db")
+    cur1, conn1=dom.database_access("main.db")
+    cur2, conn2=dom.database_access("main.db")
+    cur3, conn3=dom.database_access("main.db")
 
     geometry_vehicle=point_creater(cur1, "Vehicles")
     geometry_busstop=point_creater(cur2, "bus_stops")
@@ -87,11 +94,13 @@ def main():
 
     fig, ax = plt.subplots(figsize=[15, 10])
     visualize_census("tracts_with_income.geojson", ax)
-    visualize_dots(gdf_busstop, ax, "orange", 5)
-    visualize_dots(gdf_vehicle, ax, "red", 10)
+    visualize_dots(gdf_busstop, ax, "cyan", 3)
+    visualize_dots(gdf_vehicle, ax, "red", 2)
     ax.set_xlim(-77.15, -76.90)
     ax.set_ylim(38.79, 39)
     plt.show()
 
 if __name__ == "__main__":
     main()
+
+    #print(calc_distance((38.911534,-77.04167), (38.916999,-77.027574)))

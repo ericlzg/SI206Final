@@ -107,7 +107,7 @@ def status_table(cur, conn):
 
 def main():
     data=get_data("https://data.lime.bike/api/partners/v1/gbfs/washington_dc/free_bike_status.json?")
-    cur, conn=database_access("sharedfleet.db")
+    cur, conn=database_access("main.db")
     type_table(data, cur, conn)
     unix_conversion(data)
     vehicle_table(data, cur, conn)
