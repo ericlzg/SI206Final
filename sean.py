@@ -88,6 +88,7 @@ def plot_bus_stops_from_db(db_name):
     # Set axis labels
     ax.set_xlabel('Longitude')
     ax.set_ylabel('Latitude')
+    ax.set_title("Bus Stops in Washington DC")
     
     # Show plot
     plt.show()
