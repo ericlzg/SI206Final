@@ -30,7 +30,7 @@ def writedb(data,db):
         tractname = tract[0: tract.find(";")]
         medianincome = int(data[i][1])
         if medianincome < 0:
-            medianincome = None
+            medianincome = -1
         fips = int(data[i][4])
         cur.execute("INSERT OR IGNORE INTO Tracts (id, name, income, fips_code) VALUES (?,?,?,?)",(i, tractname, medianincome, fips))
         if cur.lastrowid != 0:
