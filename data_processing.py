@@ -24,14 +24,13 @@ from math import radians, sin, cos, sqrt, atan2
 
 
 
-#SET-UP
+#SET-UP for DATA VISUALIZATION
 #function that pulls lon and lat from a database table into a coordinate form
 def coordinate(cur, table_name):
     cur.execute(f'SELECT longitude, latitude FROM {table_name}')
     coordinates=cur.fetchall()
     return coordinates
 
-#1ST VISUALIZATION
 #function that convert coordinates into plottable points
 def point_creater(cur, table_name):
     geometry=[]
@@ -57,9 +56,7 @@ def visualize_dots(gdf_object, ax, color, markersize):
 
 #
 #
-#
-
-#2ND VISUALIZATION
+#DATA CALCULATION
 #function that takes two coordinates and measure the distance between them in kilometers (using Haversine Formula)
 def calc_distance(coordinate1, coordinate2):
     #conversion to radians
