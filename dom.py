@@ -90,19 +90,17 @@ def vehicle_table(data, cur, conn):
             is_reserved=vehicle["is_reserved"]
             is_disabled=vehicle["is_disabled"]
             #put data into database
-            cur.execute("INSERT INTO Vehicles (vehicle_id, time, vehicle_type, latitude, longitude, is_reserved, is_disabled) VALUES (?,?,?,?,?,?,?)", (vehicle_id, time, vehicle_type_id, latitude, longitude, is_reserved, is_disabled))
+            cur.execute("INSERT OR IGNORE INTO Vehicles (vehicle_id, time, vehicle_type, latitude, longitude, is_reserved, is_disabled) VALUES (?,?,?,?,?,?,?)", (vehicle_id, time, vehicle_type_id, latitude, longitude, is_reserved, is_disabled))
             count+=1
         conn.commit()
     pass
 
 #Status Table
 def status_table(cur, conn):
-    cur.execute('DROP TABLE IF EXISTS Status')
-    cur.execute('DROP TABLE IF EXISTS Reserved_Disabled')
     status_list=["False", "True"]
     cur.execute("CREATE TABLE IF NOT EXISTS Reserved_Disabled(status INTEGER, meaning TEXT)")
     for i in range(len(status_list)):
-        cur.execute("INSERT INTO Reserved_Disabled (status,meaning) VALUES (?,?)", (i, status_list[i]))
+        cur.execute("INSERT OR IGNORE INTO Reserved_Disabled (status,meaning) VALUES (?,?)", (i, status_list[i]))
     conn.commit()
 
 def main():
