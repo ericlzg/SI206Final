@@ -37,6 +37,27 @@ def writedb(data,db):
             count += 1
     return "All data written"
 
+def modifygeojson(db, infile, outfile):
+    path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(path + "/" + db)
+    cur = conn.cursor() 
+    source_dir = os.path.dirname(__file__)
+    full_path = os.path.join(source_dir, infile)
+    with open(full_path,'r') as f:
+        data = json.load(f)
+    for feature in data['features']:
+        name = feature['properties']['NAMELSAD']
+        cur.execute("SELECT income FROM Tracts WHERE name = ?", (name,))
+        rd = cur.fetchall()
+        try:
+            feature['properties']['INCOME'] = rd[0][0]
+        except:
+            feature['properties']['INCOME'] = -1
+    with open(outfile,'w') as of:
+        json.dump(data, of, indent=2)
+    return
+    
+
 
 
 
@@ -48,5 +69,6 @@ def writedb(data,db):
 
     
 def main():
-    print(writedb(getdata(),'testdb.db'))
+    #print(writedb(getdata(),'testdb.db'))
+    modifygeojson('testdb.db', "tl_2022_11_tract.geojson", "tracts_with_income.geojson")
 main()
