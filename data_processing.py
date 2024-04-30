@@ -1,6 +1,7 @@
 #IMPORT NECESSARY LIBRARIES
 import json
 import dom 
+import sean
 from shapely.geometry import Point
 import os
 import sqlite3
@@ -125,6 +126,9 @@ def main():
     ax1.set_xlabel("longitude")
     ax1.set_ylabel("latitude")
     ax1.set_title("Sharedfleet (Lime) in Washington DC")
+
+    #visualization 2 
+    sean.main()
 
     #visualization 3
     fig3, ax3 = plt.subplots(figsize=[15, 10])
