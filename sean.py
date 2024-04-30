@@ -33,17 +33,23 @@ def create_bus_stop_database(data, db_name):
                     latitude REAL,
                     longitude REAL
                     )''')
+    
+    count = 0
 
     # Insert data into bus stops table
     for stop in data['Stops']:
+        if count >= 25:
+            conn.commit()
+            return "Terminating after reaching write limit"
         stop_id = stop['StopID']
         lat = stop['Lat']
         lon = stop['Lon']
         cur.execute("INSERT OR IGNORE INTO bus_stops (stop_id, latitude, longitude) VALUES (?, ?, ?)", (stop_id, lat, lon))
+        if cur.lastrowid != 0:
+            count += 1
 
     # Commit changes and close connection
-    conn.commit()
-    conn.close()
+    return "All data written"
 
 # Function to retrieve bus stop data from the database
 def retrieve_bus_stop_data(db_name):
