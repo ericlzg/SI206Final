@@ -88,7 +88,7 @@ def main():
     fig, ax = plt.subplots(figsize=[15, 10])
     visualize_census("tracts_with_income.geojson", ax)
     visualize_dots(gdf_busstop, ax, "orange", 5)
-    visualize_dots(gdf_vehicle, ax, "red", 20)
+    visualize_dots(gdf_vehicle, ax, "red", 10)
     ax.set_xlim(-77.15, -76.90)
     ax.set_ylim(38.79, 39)
     plt.show()
