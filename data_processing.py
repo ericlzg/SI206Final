@@ -92,12 +92,25 @@ def main():
     gdf_vehicle=GeoDataFrame_creation(geometry_vehicle)
     gdf_busstop=GeoDataFrame_creation(geometry_busstop)
 
-    fig, ax = plt.subplots(figsize=[15, 10])
-    visualize_census("tracts_with_income.geojson", ax)
-    visualize_dots(gdf_busstop, ax, "cyan", 3)
-    visualize_dots(gdf_vehicle, ax, "red", 2)
-    ax.set_xlim(-77.15, -76.90)
-    ax.set_ylim(38.79, 39)
+    #visualization 1
+    fig1, ax1 = plt.subplots(figsize=[15, 10])
+    visualize_dots(gdf_vehicle, ax1, "red", 2)
+    ax1.set_xlim(-77.15, -76.90)
+    ax1.set_ylim(38.79, 39)
+    ax1.set_xlabel("longitude")
+    ax1.set_ylabel("latitude")
+    ax1.set_title("Sharedfleet (Lime) in Washington DC")
+
+    #visualization 3
+    fig3, ax3 = plt.subplots(figsize=[15, 10])
+    visualize_census("tracts_with_income.geojson", ax3)
+    visualize_dots(gdf_busstop, ax3, "cyan", 3)
+    visualize_dots(gdf_vehicle, ax3, "red", 2)
+    ax3.set_xlim(-77.15, -76.90)
+    ax3.set_ylim(38.79, 39)
+    ax3.set_xlabel("longitude")
+    ax3.set_ylabel("latitude")
+    ax3.set_title("Overlay of Sharefleet and Bus Stops over Census Tract in Washington DC")
     plt.show()
 
 if __name__ == "__main__":
